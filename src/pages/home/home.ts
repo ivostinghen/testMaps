@@ -24,7 +24,7 @@ export class HomePage {
   };
 
   latitude:Number;
-  longitude:Number
+  longitude:Number;
 
   constructor(public navCtrl: NavController, public geolocation:Geolocation, public alertCtrl: AlertController,private storage: Storage) {
 
@@ -84,18 +84,19 @@ export class HomePage {
     this.local.nome = nome;
     this.local.atividade = atividade;
 
-
-    this.local.latitude = this.latitude;
-    this.local.longitude = this.longitude;
+    // console.log("HERE           " + this.latitude);
+    this.local.latitude = this.map.getCenter().lat();
+    this.local.longitude = this.map.getCenter().lng();
     var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
     var localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
     this.local.horario = localISOTime;
+   cal);
 
 
-    this.locais.push(this.local);
+
+    this.storage.set('local', this.locais);
+
     console.log(this.locais);
-    this.storage.set('local', local);
-
 
   }
 
@@ -112,32 +113,57 @@ export class HomePage {
       }
       this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
 
+
+
+
+    },function(error){
+      console.log(error.toString());
+      ///TODO: ASK USER IF HE WANT TO ACTIVE GPS
+
+    }).then((position)=>{
       this.loadMarkerIfExists();
+
+
     });
 
 
   }
-  loadMarkerIfExists(){
+
+
+  loadMarkerIfExists(){ //Fill the vector with the stored object if exists.
 
     this.storage.get('local').then((val) => {
+      if(val == null){
+        return;
+      }
       console.log(val);
+      this.locais = val;
+
+
+      for (var i = 0; i < this.locais.length; i++) {
+        console.log(this.locais.length.toString());
+        var marker = new google.maps.Marker({
+          map:this.map,
+          animation: google.maps.Animation.DROP,
+          position:{
+            lat: this.locais[i].latitude,
+            lng: this.locais[i].longitude,
+          }
+        });
+
+
+      }
+
     },function(error){
+      console.log(error.toString());
       return;
     });
 
 
-    // let marker = new google.maps.Marker({
-    //   map:this.map,
-    //   animation: google.maps.Animation.DROP,
-    //   position:{
-    //     lat: Number(lat),
-    //     lng: Number(lng),
-    //   },
-    // });
   }
 
   addMarker(){
-    let marker = new google.maps.Marker({
+    var marker = new google.maps.Marker({
       map:this.map,
       animation: google.maps.Animation.DROP,
       position:this.map.getCenter()
@@ -146,6 +172,8 @@ export class HomePage {
     let content = "<h4>Local Atual!</h4>";
     this.addInfoWindow(marker,content);
 
+
+
   }
 
   addInfoWindow(marker,content){
@@ -153,9 +181,9 @@ export class HomePage {
       content:content
     });
     google.maps.event.addListener(marker,'click',()=> {
-      // infoWindow.open(this.map,marker);
+      infoWindow.open(this.map,marker);
 
-    console.log(this.map.getCenter());
+     console.log(this.map.getCenter());
 
 
       this.presentPrompt();
