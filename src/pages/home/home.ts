@@ -2,37 +2,26 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
 import { NavController ,  AlertController} from 'ionic-angular';
 import { Geolocation} from '@ionic-native/geolocation';
 import { Storage } from '@ionic/storage';
+import {Local} from "./local";
 declare var google;
 
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
-export class HomePage {
+
+export class HomePage  {
 
   @ViewChild('map') mapElement: ElementRef;
   map:any;
-
-  locais:any = [];
-
-  local: any = {
-    nome: String,
-    atividade: String,
-    horario: String,
-    latitude: Number,
-    longitude: Number,
-  };
-
+  locais :any = [];
   latitude:Number;
   longitude:Number;
-
   constructor(public navCtrl: NavController, public geolocation:Geolocation, public alertCtrl: AlertController,private storage: Storage) {
-
   }
 
   ionViewDidLoad(){
     this.loadMap();
-
   }
 
   presentPrompt() {
@@ -60,7 +49,7 @@ export class HomePage {
           text: 'REGISTRAR',
           handler: data => {
 
-            this.salvar(data.nome.toString(), data.atividade.toString());
+            this.save(data.nome.toString(), data.atividade.toString());
 
             // if (User.isValid(data.username, data.password)) {
             //   // logged in!
@@ -75,33 +64,21 @@ export class HomePage {
     alert.present();
   }
 
-  salvar(nome,atividade){
+  save(nome, atividade){  //Save current location.
 
-    var local;
-    // var local = {nome,atividade,marker.latitude,marker.longitude};
-
-
-    this.local.nome = nome;
-    this.local.atividade = atividade;
-
-    // console.log("HERE           " + this.latitude);
-    this.local.latitude = this.map.getCenter().lat();
-    this.local.longitude = this.map.getCenter().lng();
     var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
     var localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
-    this.local.horario = localISOTime;
-
-
-      this.locais.push(this.local);
-
-
-
+    var local = new Local();
+    local.local(nome,
+      atividade,
+      localISOTime,
+      this.map.getCenter().lat(),
+      this.map.getCenter().lng()
+    );
+    this.locais.push(local);
     this.storage.set('local', this.locais);
-
     console.log(this.locais);
-
   }
-
 
   loadMap(){
     this.geolocation.getCurrentPosition().then((position)=>{
@@ -115,32 +92,21 @@ export class HomePage {
       }
       this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
 
-
-
-
     },function(error){
       console.log(error.toString());
       ///TODO: ASK USER IF HE WANT TO ACTIVE GPS
-
     }).then((position)=>{
       this.loadMarkerIfExists();
-
-
     });
 
 
   }
 
-
   loadMarkerIfExists(){ //Fill the vector with the stored object if exists.
-
     this.storage.get('local').then((val) => {
-      if(val == null){
-        return;
-      }
-      console.log(val);
+      if(val == null) return;
       this.locais = val;
-
+      console.log(val);
 
       for (var i = 0; i < this.locais.length; i++) {
         console.log(this.locais.length.toString());
@@ -148,8 +114,8 @@ export class HomePage {
           map:this.map,
           animation: google.maps.Animation.DROP,
           position:{
-            lat: this.locais[i].latitude,
-            lng: this.locais[i].longitude,
+            lat: Number(this.locais[i].latitude),
+            lng: Number(this.locais[i].longitude),
           }
         });
 
@@ -170,7 +136,6 @@ export class HomePage {
       animation: google.maps.Animation.DROP,
       position:this.map.getCenter()
     });
-
     let content = "<h4>Local Atual!</h4>";
     this.addInfoWindow(marker,content);
 
@@ -184,12 +149,8 @@ export class HomePage {
     });
     google.maps.event.addListener(marker,'click',()=> {
       infoWindow.open(this.map,marker);
-
-     console.log(this.map.getCenter());
-
-
+      console.log(this.map.getCenter());
       this.presentPrompt();
-
     });
   }
 
