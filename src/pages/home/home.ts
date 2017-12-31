@@ -18,13 +18,12 @@ export class HomePage  {
   locais :any = [];
   latitude:Number;
   longitude:Number;
+  markers:any = [];
   constructor(public navCtrl: NavController, public geolocation:Geolocation, public alertCtrl: AlertController,private storage: Storage) {
   }
-
   ionViewDidLoad(){
     this.loadMap();
   }
-
   presentPrompt() {
     let alert = this.alertCtrl.create({
       title: 'Informações do Local',
@@ -78,6 +77,9 @@ export class HomePage  {
     );
     this.locais.push(local);
     this.storage.set('local', this.locais);
+
+
+
     console.log(this.locais);
   }
 
@@ -111,7 +113,7 @@ export class HomePage  {
 
       for (var i = 0; i < this.locais.length; i++) {
         console.log(this.locais.length.toString());
-        var marker = new google.maps.Marker({
+         var marker = new google.maps.Marker({
           map:this.map,
           animation: google.maps.Animation.DROP,
           position:{
@@ -120,7 +122,7 @@ export class HomePage  {
           }
         });
 
-
+        this.markers.push(marker);
       }
 
     },function(error){
@@ -131,8 +133,9 @@ export class HomePage  {
 
   }
 
+
   addMarker(){
-    var marker = new google.maps.Marker({
+    var  marker = new google.maps.Marker({
       map:this.map,
       animation: google.maps.Animation.DROP,
       position:this.map.getCenter()

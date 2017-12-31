@@ -24,20 +24,16 @@
     </ion-fab>
 
     <ion-item>
-      <ion-icon name="football" item-start large></ion-icon>
-      <h2>Museum of Football</h2>
-      <p>11 N. Way St, Madison, WI 53703</p>
+      <!--<ion-icon name="football" item-start large></ion-icon>-->
+      <h2>{{item.nome}}</h2>
+      <h3>{{item.atividade}}</h3>
     </ion-item>
 
     <ion-item>
-      <ion-icon name="wine" item-left large ></ion-icon>
-      <h2>Institute of Fine Cocktails</h2>
-      <p>14 S. Hop Avenue, Madison, WI 53703</p>
-    </ion-item>
+      <!--<span item-left>18 min</span>-->
+      <!--<span item-left>(2.6 mi)</span> -->
+      <span item-left>{{item.horario}}</span>
 
-    <ion-item>
-      <span item-left>18 min</span>
-      <span item-left>(2.6 mi)</span>
       <button ion-button icon-left clear item-end>
         <ion-icon name="navigate"></ion-icon>
         Start
