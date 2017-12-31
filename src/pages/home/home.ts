@@ -2,7 +2,8 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
 import { NavController ,  AlertController} from 'ionic-angular';
 import { Geolocation} from '@ionic-native/geolocation';
 import { Storage } from '@ionic/storage';
-import {Local} from "./local";
+import {Local} from "../module/local";
+
 declare var google;
 
 @Component({

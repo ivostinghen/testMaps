@@ -1,20 +1,18 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>
-      MAPS
-    </ion-title>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title >Agenda</ion-title>
     <ion-buttons end>
       <button ion-button (click)="addMarker()">
         <ion-icon name="add"> </ion-icon>
-         Add Marker
+        Add Marker
       </button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-
   <div #map id="map"></div>
-
 </ion-content>
-
