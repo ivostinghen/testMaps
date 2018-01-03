@@ -1,5 +1,5 @@
 import {Component, ElementRef, ViewChild} from '@angular/core';
-import { NavController ,  AlertController} from 'ionic-angular';
+import {NavController, AlertController, Events, NavParams} from 'ionic-angular';
 import { Geolocation} from '@ionic-native/geolocation';
 import { Storage } from '@ionic/storage';
 import {Local} from "../module/local";
@@ -19,12 +19,38 @@ export class HomePage  {
   latitude:Number;
   longitude:Number;
   markers:any = [];
-  constructor(public navCtrl: NavController, public geolocation:Geolocation, public alertCtrl: AlertController,private storage: Storage) {
+  user:any = {} ;
+
+  constructor(public navParams: NavParams,public events:Events, public navCtrl: NavController, public geolocation:Geolocation, public alertCtrl: AlertController,private storage: Storage) {
+
+
+
+    events.subscribe('reloadMap', () => { //Service. It will reuturn from Agenda.
+      this.storage.get('focusMap').then((val) => {
+        var latlng = {"lat":Number(val.latitude),"lng":Number(val.longitude)};
+        this.map.setCenter(latlng);
+        setTimeout(function(){
+          ///TODO::;setzoom not working
+          // this.map.setZoom(15);
+          
+
+        }),5000;
+
+        console.log(val);
+      },function(error){
+        console.log(error.toString());
+        return;
+      });
+      // let user = this.navParams.get('user');
+
+
+    });
   }
   ionViewDidLoad(){
     this.loadMap();
+
   }
-  presentPrompt() {
+  registerWindow() {
     let alert = this.alertCtrl.create({
       title: 'Informações do Local',
       inputs: [
@@ -68,6 +94,10 @@ export class HomePage  {
 
     var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
     var localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, -1);
+    console.log(tzoffset);
+    console.log(new Date(Date.now()).toISOString());
+    console.log(localISOTime);
+
     var local = new Local();
     local.local(nome,
       atividade,
@@ -77,8 +107,6 @@ export class HomePage  {
     );
     this.locais.push(local);
     this.storage.set('local', this.locais);
-
-
 
     console.log(this.locais);
   }
@@ -95,11 +123,13 @@ export class HomePage  {
       }
       this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
 
+
     },function(error){
       console.log(error.toString());
-      ///TODO: ASK USER IF HE WANT TO ACTIVE GPS
+      ///TODO: ASK USER IF HE WANT TO ACTIVATE GPS
     }).then((position)=>{
       this.loadMarkerIfExists();
+
     });
 
 
@@ -121,7 +151,6 @@ export class HomePage  {
             lng: Number(this.locais[i].longitude),
           }
         });
-
         this.markers.push(marker);
       }
 
@@ -129,6 +158,7 @@ export class HomePage  {
       console.log(error.toString());
       return;
     });
+
 
 
   }
@@ -140,10 +170,8 @@ export class HomePage  {
       animation: google.maps.Animation.DROP,
       position:this.map.getCenter()
     });
-    let content = "<h4>Local Atual!</h4>";
+    let content = "<h3>Local Atual!</h3>";
     this.addInfoWindow(marker,content);
-
-
 
   }
 
@@ -154,8 +182,10 @@ export class HomePage  {
     google.maps.event.addListener(marker,'click',()=> {
       infoWindow.open(this.map,marker);
       console.log(this.map.getCenter());
-      this.presentPrompt();
+      this.registerWindow();
     });
   }
+
+
 
 }

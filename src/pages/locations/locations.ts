@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import {Component, ViewChild} from '@angular/core';
+import { NavController,IonicPage, NavParams } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
+import { Events } from 'ionic-angular';
+
+import {HomePage} from "../home/home";
 /**
  * Generated class for the LocationsPage page.
  *
@@ -14,10 +17,15 @@ import { Storage } from '@ionic/storage';
   templateUrl: 'locations.html',
 })
 export class LocationsPage {
+  user:any = {} ;
   locais :any = [];
-  constructor(public navCtrl: NavController, public navParams: NavParams,private storage: Storage){
+  constructor(public navCtrl: NavController, public navParams: NavParams,private storage: Storage, public events:Events){
 
   }
+
+
+
+
 
   ionViewDidLoad() {
     this.storage.get('local').then((val) => {
@@ -30,6 +38,29 @@ export class LocationsPage {
       console.log(error.toString());
       return;
     });
+
+  }
+  mapFocus(item){
+
+
+
+
+    this.storage.set('focusMap', item).then((val) => {
+      this.events.publish('reloadMap');
+      this.navCtrl.pop();
+    },function(error){
+      console.log(error.toString());
+      return;
+    });
+
+
+
+
+
+    // this.navCtrl.pop();
+    //
+
+
 
   }
 

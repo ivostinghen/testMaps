@@ -8,8 +8,9 @@
 
   <ion-content>
     <ion-list>
-      <button style="color: #2b2b2b;  font-size: 20px" menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
-        {{p.title}}
+      <button  style="color: #2b2b2b;  font-size: 20px" menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
+        <h2 *ngIf="p.title =='Locations'">{{p.title.replace('Locations','Minha Agenda')}}</h2>
+        <h2 *ngIf="p.title !='Locations'">{{p.title}}</h2>
       </button>
     </ion-list>
   </ion-content>

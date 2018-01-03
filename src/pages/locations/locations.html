@@ -17,25 +17,28 @@
   <ion-card *ngFor="let item of locais">
 
     <!--<img src="img/advance-card-map-madison.png">-->
-    <ion-fab right top>
-      <button ion-fab>
-        <ion-icon name="pin"></ion-icon>
-      </button>
-    </ion-fab>
+    <!--<ion-fab right top>-->
+      <!--<button ion-fab>-->
+        <!--<ion-icon name="pin"></ion-icon>-->
+      <!--</button>-->
+    <!--</ion-fab>-->
 
     <ion-item>
       <!--<ion-icon name="football" item-start large></ion-icon>-->
-      <h2>{{item.nome}}</h2>
-      <h3>{{item.atividade}}</h3>
+      <p style="font-size: .8em; ">Atividade: </p>
+      <p style="padding-left: 6px; font-size: 1em; color: black;">{{item.atividade}}</p>
+      <br>
+      <p style="font-size: .8em; ">Local: </p>
+      <p style="padding-left: 6px;  font-size: 1em; color: black;">{{item.nome}}</p>
     </ion-item>
 
     <ion-item>
-      <!--<span item-left>18 min</span>-->
-      <!--<span item-left>(2.6 mi)</span> -->
-      <span item-left>{{item.horario}}</span>
 
-      <button ion-button icon-left clear item-end>
-        <ion-icon name="navigate"></ion-icon>
+      <ion-label style="font-size: .8em;opacity: 1;"><p>Data:</p>
+      <ion-datetime  style=" padding-left: 6px;  color: black;opacity: 1;font-size: 1.2em;" disabled displayFormat="DD-MM-YYYY, h:mm A" [(ngModel)]="item.horario"></ion-datetime>
+      </ion-label>
+      <button ion-button icon-left clear item-end (click)="mapFocus(item)">
+        <ion-icon name="navigate" ></ion-icon>
         Start
       </button>
     </ion-item>
